@@ -62,35 +62,41 @@ class AuthManager {
 // Initialize
 const auth = new AuthManager();
 
-// Login form handler
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const username = document.getElementById('username').value;
-  const password = document.getElementById('password').value;
-  const messageEl = document.getElementById('loginMessage');
-  
-  const result = await auth.login(username, password);
-  
-  if (result.success) {
-    window.location.href = '/dashboard.html';
-  } else {
-    messageEl.className = 'alert alert-danger';
-    messageEl.textContent = result.message;
-  }
-});
+// Login form handler - only run if login form exists
+const loginForm = document.getElementById('loginForm');
+if (loginForm) {
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const messageEl = document.getElementById('loginMessage');
+    
+    const result = await auth.login(username, password);
+    
+    if (result.success) {
+      window.location.href = '/dashboard.html';
+    } else {
+      messageEl.className = 'alert alert-danger';
+      messageEl.textContent = result.message;
+    }
+  });
+}
 
-// Password toggle functionality
-document.getElementById('togglePassword').addEventListener('click', function() {
-  const passwordInput = document.getElementById('password');
-  const passwordIcon = document.getElementById('passwordIcon');
+// Password toggle functionality - only run if elements exist
+const togglePassword = document.getElementById('togglePassword');
+if (togglePassword) {
+  togglePassword.addEventListener('click', function() {
+    const passwordInput = document.getElementById('password');
+    const passwordIcon = document.getElementById('passwordIcon');
 
-  if (passwordInput.type === 'password') {
-    passwordInput.type = 'text';
-    passwordIcon.classList.remove('bi-eye-slash-fill');
-    passwordIcon.classList.add('bi-eye-fill');
-  } else {
-    passwordInput.type = 'password';
-    passwordIcon.classList.remove('bi-eye-fill');
-    passwordIcon.classList.add('bi-eye-slash-fill');
-  }
-});
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      passwordIcon.classList.remove('bi-eye-slash-fill');
+      passwordIcon.classList.add('bi-eye-fill');
+    } else {
+      passwordInput.type = 'password';
+      passwordIcon.classList.remove('bi-eye-fill');
+      passwordIcon.classList.add('bi-eye-slash-fill');
+    }
+  });
+}
