@@ -39,28 +39,29 @@ function loadPageContent() {
     deleteConfirmModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
     liveToast = new bootstrap.Toast(document.getElementById('liveToast'));
     
-    // Initialize Choices.js
-    choicesNama = new Choices(document.getElementById('addNama'), {
-        removeItemButton: true,
-        placeholder: true,
-        placeholderValue: 'Pilih nama...'
+    // Load initial data first, then initialize Choices.js
+    loadFormData().then(() => {
+        // Initialize Choices.js after data is loaded
+        choicesNama = new Choices(document.getElementById('addNama'), {
+            removeItemButton: true,
+            placeholder: true,
+            placeholderValue: 'Pilih nama...'
+        });
+        
+        choicesType = new Choices(document.getElementById('addType'), {
+            removeItemButton: true,
+            placeholder: true,
+            placeholderValue: 'Pilih type...'
+        });
+        
+        choicesFungsi = new Choices(document.getElementById('addFungsi'), {
+            removeItemButton: true,
+            placeholder: true,
+            placeholderValue: 'Pilih fungsi...'
+        });
+        
+        loadData();
     });
-    
-    choicesType = new Choices(document.getElementById('addType'), {
-        removeItemButton: true,
-        placeholder: true,
-        placeholderValue: 'Pilih type...'
-    });
-    
-    choicesFungsi = new Choices(document.getElementById('addFungsi'), {
-        removeItemButton: true,
-        placeholder: true,
-        placeholderValue: 'Pilih fungsi...'
-    });
-    
-    // Load initial data
-    loadFormData();
-    loadData();
     
     // Event listeners
     document.getElementById('addDataForm').addEventListener('submit', handleAdd);
@@ -119,7 +120,7 @@ function showNotification(message, type = 'success') {
 }
 
 function loadFormData() {
-    fetch('/api/input/data', {
+    return fetch('/api/input/data', {
         headers: auth.getAuthHeaders()
     })
     .then(response => response.json())
@@ -170,14 +171,12 @@ function loadFormData() {
             });
         }
         
-        // Update Choices instances
-        choicesNama.setChoiceByValue('');
-        choicesType.setChoiceByValue('');
-        choicesFungsi.setChoiceByValue('');
+        return data; // Return data for use in the then() callback
     })
     .catch(error => {
         console.error('Error loading form data:', error);
         showNotification('Gagal memuat data formulir: ' + error.message, 'error');
+        throw error; // Re-throw to handle in the calling function
     });
 }
 

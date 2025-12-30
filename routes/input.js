@@ -25,12 +25,49 @@ router.get('/data', authenticateToken, async (req, res) => {
       return res.status(500).json({ error: dataError.message });
     }
 
-    // Extract unique values
-    const types = [...new Set(workloadData.map(item => item.type).filter(Boolean))];
-    const statuses = [...new Set(workloadData.map(item => item.status).filter(Boolean))];
-    const fungsi = [...new Set(workloadData.map(item => item.fungsi).filter(Boolean))];
+    // Extract unique values from existing data
+    const existingTypes = [...new Set(workloadData.map(item => item.type).filter(Boolean))];
+    const existingStatuses = [...new Set(workloadData.map(item => item.status).filter(Boolean))];
+    const existingFungsi = [...new Set(workloadData.map(item => item.fungsi).filter(Boolean))];
 
-    res.json({ 
+    // Default options for dropdowns
+    const defaultTypes = [
+      'Surat Masuk',
+      'Surat Keluar',
+      'Undangan',
+      'Disposisi',
+      'Notulensi',
+      'Laporan',
+      'Dokumen Kontrak',
+      'Perjanjian',
+      'MoU',
+      'Lainnya'
+    ];
+
+    const defaultStatuses = [
+      'New',
+      'ON - Progress',
+      'Pending',
+      'Done',
+      'Cancel'
+    ];
+
+    const defaultFungsi = [
+      'Hukum',
+      'Perjanjian',
+      'Kerjasama',
+      'Advokasi',
+      'Legislasi',
+      'Konsultasi Hukum',
+      'Lainnya'
+    ];
+
+    // Combine existing data with defaults, remove duplicates
+    const types = [...new Set([...existingTypes, ...defaultTypes])];
+    const statuses = [...new Set([...existingStatuses, ...defaultStatuses])];
+    const fungsi = [...new Set([...existingFungsi, ...defaultFungsi])];
+
+    res.json({
       users: users.map(user => ({ id: user.id, nama: user.nama })),
       dropdownOptions: {
         Type: types,
