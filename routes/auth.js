@@ -64,4 +64,32 @@ router.post('/logout', authenticateToken, async (req, res) => {
   }
 });
 
+// Verify token endpoint
+router.get('/verify', authenticateToken, async (req, res) => {
+  try {
+    // Get user data from database
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('id, nama, role')
+      .eq('id', req.user.userId)
+      .single();
+    
+    if (error || !user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    res.json({
+      success: true,
+      user: {
+        id: user.id,
+        nama: user.nama,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    console.error('Token verification error:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
 module.exports = router;
